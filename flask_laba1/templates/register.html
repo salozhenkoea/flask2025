@@ -5,8 +5,8 @@
     <title>Регистрация</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        form { max-width: 300px; }
-        input { width: 100%; padding: 8px; margin: 5px 0; }
+        form { max-width: 350px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; }
         button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
         a { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; }
     </style>
@@ -16,8 +16,17 @@
     <form method="POST">
         <label>Логин:</label>
         <input type="text" name="username" required>
+
         <label>Пароль:</label>
         <input type="password" name="password" required>
+
+        <label>Вы регистрируетесь как:</label>
+        <select name="role" required>
+            <option value="">-- Выберите --</option>
+            <option value="doctor">Врач</option>
+            <option value="patient">Пациент</option>
+        </select>
+
         <button type="submit">Зарегистрироваться</button>
     </form>
     <p><a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a></p>

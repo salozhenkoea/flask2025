@@ -5,11 +5,21 @@
     <title>Личный кабинет</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
+        .role-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #e9ecef; }
     </style>
 </head>
 <body>
     <h2>Привет, {{ username }}!</h2>
-    <p>Вы успешно вошли в систему.</p>
+    <p>Ваша роль: <span class="role-tag">{{ role_name }}</span></p>
+
+    {% if role == 'doctor' %}
+        <h3>Панель врача</h3>
+        <p>Здесь будут назначения, список пациентов, расписание...</p>
+    {% elif role == 'patient' %}
+        <h3>Панель пациента</h3>
+        <p>Здесь будут ваши записи, история болезни, рекомендации...</p>
+    {% endif %}
+
     <p><a href="{{ url_for('logout') }}">Выйти</a></p>
 </body>
 </html>

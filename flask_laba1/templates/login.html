@@ -5,9 +5,10 @@
     <title>Вход</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        form { max-width: 300px; }
-        input { width: 100%; padding: 8px; margin: 5px 0; }
+        form { max-width: 350px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        a { display: inline-block; margin-top: 10px; color: #28a745; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -15,10 +16,20 @@
     <form method="POST">
         <label>Логин:</label>
         <input type="text" name="username" required>
+
         <label>Пароль:</label>
         <input type="password" name="password" required>
+
+        <label>Вы заходите как:</label>
+        <select name="role" required>
+            <option value="">-- Выберите --</option>
+            <option value="doctor">Врач</option>
+            <option value="patient">Пациент</option>
+        </select>
+
         <button type="submit">Войти</button>
     </form>
+    <p><a href="{{ url_for('register') }}">Нет аккаунта? Зарегистрироваться</a></p>
     <p><a href="{{ url_for('index') }}">На главную</a></p>
 </body>
 </html>
