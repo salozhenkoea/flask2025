@@ -3,16 +3,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Надёжный случайный ключ
+app.secret_key = os.urandom(24) 
 
-# Простое "хранилище" пользователей в памяти (в реальном проекте — база данных!)
 users_db = {}
 
 @app.route('/')
 def index():
     return render_template('base.html')
 
-# === РЕГИСТРАЦИЯ ===
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -24,7 +22,7 @@ def register():
         elif username in users_db:
             flash('Пользователь с таким логином уже существует!', 'error')
         else:
-            # Хешируем пароль!
+    
             hashed_pw = generate_password_hash(password)
             users_db[username] = hashed_pw
             flash('Регистрация успешна! Теперь вы можете войти.', 'success')
@@ -32,7 +30,6 @@ def register():
     
     return render_template('register.html')
 
-# === ВХОД ===
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -48,7 +45,6 @@ def login():
     
     return render_template('login.html')
 
-# === ЛИЧНЫЙ КАБИНЕТ ===
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
@@ -56,7 +52,6 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('dashboard.html', username=session['user'])
 
-# === ВЫХОД ===
 @app.route('/logout')
 def logout():
     session.pop('user', None)
