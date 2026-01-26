@@ -6,10 +6,17 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background: #f0f0f0; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background: #f5f5f5; }
+        .free { color: #888; font-style: italic; }
         .actions { margin-top: 20px; }
         a { color: #007bff; text-decoration: none; margin-right: 15px; }
+        button {
+            padding: 4px 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -17,8 +24,9 @@
     <p>Роль: <strong>{{ 'Врач' if role == 'doctor' else 'Пациент' }}</strong></p>
 
     {% if role == 'doctor' %}
-        <h3>Ваши записи</h3>
-        {% if appointments %}
+        <h3>Ваше расписание (ближайшие 14 дней)</h3>
+        {% for date, slots in schedule.items() %}
+            <h4>{{ date }}</h4>
             <table>
                 <thead>
                     <tr>
@@ -27,34 +35,51 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for appt in appointments %}
-                        <tr>
-                            <td>{{ appt.time_slot }}</td>
-                            <td>{{ appt.patient_username }}</td>
-                        </tr>
+                    {% for item in slots %}
+                    <tr>
+                        <td>{{ item.time_slot }}</td>
+                        <td>
+                            {% if item.patient == 'Не назначено' %}
+                                <span class="free">Не назначено</span>
+                            {% else %}
+                                {{ item.patient }}
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p>У вас пока нет записей.</p>
-        {% endif %}
+            <br>
+        {% endfor %}
 
-    {% elif role == 'patient' %}
+    {% else %}
         <h3>Ваши записи</h3>
         {% if appointments %}
             <table>
                 <thead>
                     <tr>
+                        <th>Дата</th>
                         <th>Время</th>
                         <th>Врач</th>
+                        <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for appt in appointments %}
-                        <tr>
-                            <td>{{ appt.time_slot }}</td>
-                            <td>{{ appt.doctor_username }}</td>
-                        </tr>
+                    <tr>
+                        <td>{{ appt.appointment_date }}</td>
+                        <td>{{ appt.time_slot }}</td>
+                        <td>{{ appt.doctor_username }}</td>
+                        <td>
+                            <form action="{{ url_for('cancel_appointment', appt_id=appt.id) }}" method="post" style="display:inline;">
+                                <button type="submit" style="background:#dc3545; color:white;">Отменить</button>
+                            </form>
+                            <a href="{{ url_for('reschedule_appointment', appt_id=appt.id) }}"
+                               style="margin-left:8px; padding:4px 8px; background:#ffc107; text-decoration:none; color:black;">
+                                Перенести
+                            </a>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

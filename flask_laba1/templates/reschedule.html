@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Перенос записи</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        form { max-width: 400px; }
+        label { display: block; margin-top: 15px; }
+        select, input { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 20px; background: #ffc107; color: black; border: none; cursor: pointer; }
+        a { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Перенос записи</h2>
+    <p>Текущая запись: <strong>{{ appt.appointment_date }} {{ appt.time_slot }}</strong> к врачу <strong>{{ appt.doctor_username }}</strong></p>
+
+    <form method="POST">
+        <label>Новый врач:</label>
+        <select name="doctor" required>
+            {% for doc in doctors %}
+                <option value="{{ doc.username }}" {% if doc.username == appt.doctor_username %}selected{% endif %}>
+                    {{ doc.username }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Новая дата:</label>
+        <select name="date" required>
+            {% for date in dates %}
+                <option value="{{ date }}" {% if date == appt.appointment_date %}selected{% endif %}>
+                    {{ date }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Новое время:</label>
+        <select name="time_slot" required>
+            {% for slot in time_slots %}
+                <option value="{{ slot }}" {% if slot == appt.time_slot %}selected{% endif %}>
+                    {{ slot }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Перенести запись</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}">← Отмена</a>
+</body>
+</html>
