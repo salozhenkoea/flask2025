@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание {{ date }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
+        th { background: #f5f5f5; }
+        .free { color: #888; font-style: italic; }
+        a.back { display: inline-block; margin-top: 20px; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h2>Расписание на {{ date }} (врач: {{ username }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Время</th>
+                <th>Пациент</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in schedule %}
+            <tr>
+                <td>{{ item.time_slot }}</td>
+                <td>
+                    {% if item.patient == 'Не назначено' %}
+                        <span class="free">Не назначено</span>
+                    {% else %}
+                        {{ item.patient }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('dashboard') }}" class="back">← Назад к списку дат</a>
+</body>
+</html>

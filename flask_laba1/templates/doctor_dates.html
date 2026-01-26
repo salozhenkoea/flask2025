@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Выбор даты</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { color: #333; }
+        .date-list { margin-top: 20px; }
+        .date-item {
+            display: inline-block;
+            margin: 5px;
+        }
+        .date-btn {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            display: block;
+        }
+        .date-btn:hover {
+            background: #0056b3;
+        }
+        a.back { display: inline-block; margin-top: 20px; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h2>Привет, {{ username }}! (врач)</h2>
+    <p>Выберите дату, чтобы посмотреть расписание:</p>
+    <div class="date-list">
+        {% for date in dates %}
+            <div class="date-item">
+                <a href="{{ url_for('doctor_schedule', date=date) }}" class="date-btn">{{ date }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('logout') }}" class="back">Выйти</a>
+</body>
+</html>
