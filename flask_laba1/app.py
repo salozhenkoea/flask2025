@@ -21,7 +21,7 @@ def create_app():
         admin = User.query.filter_by(username='admin').first()
         if not admin:
             admin = User(username='admin', role='admin')
-            admin.set_password('admin')  # Пароль: admin
+            admin.set_password('admin')
             db.session.add(admin)
             db.session.commit()
             print("✅ Администратор создан: логин='admin', пароль='admin'")
