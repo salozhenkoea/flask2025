@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Запись к врачу</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        form { max-width: 400px; }
+        label { display: block; margin-top: 15px; }
+        select, input { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+        a { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Запись на приём</h2>
+    <form method="POST">
+        <label>Выберите врача:</label>
+        <select name="doctor" required>
+            <option value="">-- Выберите врача --</option>
+            {% for doc in doctors %}
+                <option value="{{ doc.username }}">{{ doc.username }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Выберите время:</label>
+        <select name="time_slot" required>
+            <option value="">-- Выберите время --</option>
+            {% for slot in time_slots %}
+                <option value="{{ slot }}">{{ slot }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Записаться</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}">← Назад в кабинет</a>
+</body>
+</html>

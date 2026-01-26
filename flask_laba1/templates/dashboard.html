@@ -2,22 +2,69 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
+    <title>Кабинет</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        .role-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #e9ecef; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background: #f0f0f0; }
+        .actions { margin-top: 20px; }
+        a { color: #007bff; text-decoration: none; margin-right: 15px; }
     </style>
 </head>
 <body>
     <h2>Привет, {{ username }}!</h2>
-    <p>Ваша роль: <span class="role-tag">{{ role_name }}</span></p>
+    <p>Роль: <strong>{{ 'Врач' if role == 'doctor' else 'Пациент' }}</strong></p>
 
     {% if role == 'doctor' %}
-        <h3>Панель врача</h3>
-        <p>Здесь будут назначения, список пациентов, расписание...</p>
+        <h3>Ваши записи</h3>
+        {% if appointments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Время</th>
+                        <th>Пациент</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                        <tr>
+                            <td>{{ appt.time_slot }}</td>
+                            <td>{{ appt.patient_username }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>У вас пока нет записей.</p>
+        {% endif %}
+
     {% elif role == 'patient' %}
-        <h3>Панель пациента</h3>
-        <p>Здесь будут ваши записи, история болезни, рекомендации...</p>
+        <h3>Ваши записи</h3>
+        {% if appointments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Время</th>
+                        <th>Врач</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                        <tr>
+                            <td>{{ appt.time_slot }}</td>
+                            <td>{{ appt.doctor_username }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Вы ещё не записаны ни к одному врачу.</p>
+        {% endif %}
+
+        <div class="actions">
+            <a href="{{ url_for('book_appointment') }}">📅 Записаться на приём</a>
+        </div>
     {% endif %}
 
     <p><a href="{{ url_for('logout') }}">Выйти</a></p>
