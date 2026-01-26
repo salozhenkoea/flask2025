@@ -2,44 +2,38 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Запись на приём</title>
+    <title>Загрузка файла</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
         label { display: block; margin-top: 15px; font-weight: bold; color: #34495e; }
-        select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-        select:focus { outline: none; border-color: #3498db; }
+        input[type="file"] { width: 100%; margin-top: 5px; }
+        .file-info { background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 14px; color: #7f8c8d; }
         .error { color: #e74c3c; font-size: 14px; margin-top: 5px; }
         button { width: 100%; margin-top: 25px; padding: 12px; background: #3498db; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
         button:hover { background: #2980b9; }
         .links { text-align: center; margin-top: 20px; }
         .links a { color: #95a5a6; text-decoration: none; }
         .links a:hover { text-decoration: underline; }
+        .allowed-types { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>📅 Запись на приём</h2>
+        <h2>📤 Загрузка файла</h2>
+        <p style="text-align: center; color: #7f8c8d;">Загрузите медицинские документы, анализы или другие файлы</p>
         
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             
-            <label for="doctor">{{ form.doctor.label.text }}</label>
-            {{ form.doctor() }}
-            {% for error in form.doctor.errors %}
-                <span class="error">{{ error }}</span>
-            {% endfor %}
-            
-            <label for="date">{{ form.date.label.text }}</label>
-            {{ form.date() }}
-            {% for error in form.date.errors %}
-                <span class="error">{{ error }}</span>
-            {% endfor %}
-            
-            <label for="time_slot">{{ form.time_slot.label.text }}</label>
-            {{ form.time_slot() }}
-            {% for error in form.time_slot.errors %}
+            <label for="file">{{ form.file.label.text }}</label>
+            {{ form.file() }}
+            <div class="file-info">
+                <p>📁 Максимальный размер: 16 МБ</p>
+                <p class="allowed-types">📄 Разрешены: PDF, JPG, PNG, DOC, DOCX и др.</p>
+            </div>
+            {% for error in form.file.errors %}
                 <span class="error">{{ error }}</span>
             {% endfor %}
             

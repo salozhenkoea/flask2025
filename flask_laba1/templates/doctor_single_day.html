@@ -4,39 +4,56 @@
     <meta charset="UTF-8">
     <title>Расписание {{ date }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h2 { color: #333; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; margin-bottom: 20px; text-align: center; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-        th { background: #f5f5f5; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; font-weight: bold; }
         .free { color: #888; font-style: italic; }
-        a.back { display: inline-block; margin-top: 20px; color: #007bff; }
+        .back { display: block; margin-top: 25px; text-align: center; }
+        .back a { color: #3498db; text-decoration: none; font-weight: bold; padding: 10px 20px; background: #f8f9fa; border-radius: 4px; }
+        .back a:hover { background: #e8f4fc; text-decoration: underline; }
+        .logout { display: block; margin-top: 15px; text-align: center; }
+        .logout a { color: #95a5a6; text-decoration: none; }
+        .logout a:hover { color: #7f8c8d; text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h2>Расписание на {{ date }} (врач: {{ username }})</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Время</th>
-                <th>Пациент</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in schedule %}
-            <tr>
-                <td>{{ item.time_slot }}</td>
-                <td>
-                    {% if item.patient == 'Не назначено' %}
-                        <span class="free">Не назначено</span>
-                    {% else %}
-                        {{ item.patient }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{{ url_for('dashboard') }}" class="back">← Назад к списку дат</a>
+    <div class="container">
+        <h2>📅 Расписание на {{ date }}</h2>
+        <p style="text-align: center; color: #7f8c8d;"><strong>Врач: {{ username }}</strong></p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Пациент</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in schedule %}
+                <tr>
+                    <td><strong>{{ item.time_slot }}</strong></td>
+                    <td>
+                        {% if item.patient == 'Не назначено' %}
+                            <span class="free">Не назначено</span>
+                        {% else %}
+                            {{ item.patient }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="back">
+            <a href="{{ url_for('dashboard') }}">← Назад к списку дат</a>
+        </div>
+        
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">🚪 Выйти</a>
+        </div>
+    </div>
 </body>
 </html>

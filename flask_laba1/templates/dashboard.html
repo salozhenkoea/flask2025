@@ -4,94 +4,83 @@
     <meta charset="UTF-8">
     <title>Кабинет</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; margin-bottom: 10px; }
+        .role-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: bold; color: white; background: #3498db; }
+        .role-badge.patient { background: #2ecc71; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-        th { background: #f5f5f5; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; font-weight: bold; }
         .free { color: #888; font-style: italic; }
-        .actions { margin-top: 20px; }
-        a { color: #007bff; text-decoration: none; margin-right: 15px; }
-        button {
-            padding: 4px 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
+        .actions { margin-top: 25px; text-align: center; }
+        .btn { padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-success { background: #2ecc71; color: white; }
+        .btn-success:hover { background: #27ae60; }
+        .btn-danger { background: #e74c3c; color: white; border: none; cursor: pointer; }
+        .btn-warning { background: #f39c12; color: white; text-decoration: none; display: inline-block; padding: 8px 12px; border-radius: 4px; }
+        .btn-warning:hover { background: #e67e22; }
+        .logout { display: block; margin-top: 20px; text-align: center; }
+        .logout a { color: #95a5a6; text-decoration: none; }
+        .logout a:hover { color: #7f8c8d; text-decoration: underline; }
+        .no-appointments { color: #7f8c8d; font-style: italic; text-align: center; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h2>Привет, {{ username }}!</h2>
-    <p>Роль: <strong>{{ 'Врач' if role == 'doctor' else 'Пациент' }}</strong></p>
+    <div class="container">
+        <h2>Привет, {{ username }}!</h2>
+        <p>Роль: <span class="role-badge {% if role == 'patient' %}patient{% endif %}">{{ 'Врач' if role == 'doctor' else 'Пациент' }}</span></p>
 
-    {% if role == 'doctor' %}
-        <h3>Ваше расписание (ближайшие 14 дней)</h3>
-        {% for date, slots in schedule.items() %}
-            <h4>{{ date }}</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Время</th>
-                        <th>Пациент</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in slots %}
-                    <tr>
-                        <td>{{ item.time_slot }}</td>
-                        <td>
-                            {% if item.patient == 'Не назначено' %}
-                                <span class="free">Не назначено</span>
-                            {% else %}
-                                {{ item.patient }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <br>
-        {% endfor %}
+        {% if role == 'doctor' %}
+            <h3>Ваше расписание</h3>
+            <p>Выберите дату, чтобы посмотреть расписание:</p>
+            <div class="actions">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Выбрать дату</a>
+            </div>
 
-    {% else %}
-        <h3>Ваши записи</h3>
-        {% if appointments %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Дата</th>
-                        <th>Время</th>
-                        <th>Врач</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for appt in appointments %}
-                    <tr>
-                        <td>{{ appt.appointment_date }}</td>
-                        <td>{{ appt.time_slot }}</td>
-                        <td>{{ appt.doctor_username }}</td>
-                        <td>
-                            <form action="{{ url_for('cancel_appointment', appt_id=appt.id) }}" method="post" style="display:inline;">
-                                <button type="submit" style="background:#dc3545; color:white;">Отменить</button>
-                            </form>
-                            <a href="{{ url_for('reschedule_appointment', appt_id=appt.id) }}"
-                               style="margin-left:8px; padding:4px 8px; background:#ffc107; text-decoration:none; color:black;">
-                                Перенести
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>Вы ещё не записаны ни к одному врачу.</p>
+        {% elif role == 'patient' %}
+            <h3>Ваши записи</h3>
+            {% if appointments %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Врач</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in appointments %}
+                        <tr>
+                            <td>{{ appt.appointment_date }}</td>
+                            <td>{{ appt.time_slot }}</td>
+                            <td>{{ appt.doctor_username }}</td>
+                            <td>
+                                <form action="{{ url_for('cancel_appointment', appt_id=appt.id) }}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Отменить</button>
+                                </form>
+                                <a href="{{ url_for('reschedule_appointment', appt_id=appt.id) }}" class="btn btn-warning">Перенести</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-appointments">Вы ещё не записаны ни к одному врачу.</p>
+            {% endif %}
+
+            <div class="actions">
+                <a href="{{ url_for('book_appointment') }}" class="btn btn-success">📅 Записаться на приём</a>
+                <a href="{{ url_for('upload_file') }}" class="btn btn-primary">📤 Загрузить файл</a>
+            </div>
         {% endif %}
 
-        <div class="actions">
-            <a href="{{ url_for('book_appointment') }}">📅 Записаться на приём</a>
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">🚪 Выйти</a>
         </div>
-    {% endif %}
-
-    <p><a href="{{ url_for('logout') }}">Выйти</a></p>
+    </div>
 </body>
 </html>

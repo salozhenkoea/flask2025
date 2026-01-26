@@ -4,32 +4,52 @@
     <meta charset="UTF-8">
     <title>Регистрация</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        form { max-width: 350px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; }
-        button { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
-        a { display: inline-block; margin-top: 10px; color: #007bff; text-decoration: none; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #34495e; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        input:focus, select:focus { outline: none; border-color: #2ecc71; }
+        .error { color: #e74c3c; font-size: 14px; margin-top: 5px; }
+        button { width: 100%; margin-top: 25px; padding: 12px; background: #2ecc71; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #27ae60; }
+        .links { text-align: center; margin-top: 20px; }
+        .links a { color: #3498db; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h2>Регистрация</h2>
-    <form method="POST">
-        <label>Логин:</label>
-        <input type="text" name="username" required>
-
-        <label>Пароль:</label>
-        <input type="password" name="password" required>
-
-        <label>Вы регистрируетесь как:</label>
-        <select name="role" required>
-            <option value="">-- Выберите --</option>
-            <option value="doctor">Врач</option>
-            <option value="patient">Пациент</option>
-        </select>
-
-        <button type="submit">Зарегистрироваться</button>
-    </form>
-    <p><a href="{{ url_for('login') }}">Уже есть аккаунт? Войти</a></p>
-    <p><a href="{{ url_for('index') }}">На главную</a></p>
+    <div class="container">
+        <h2>📝 Регистрация</h2>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <label for="username">{{ form.username.label.text }}</label>
+            {{ form.username(size=32, placeholder="Минимум 3 символа") }}
+            {% for error in form.username.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+            
+            <label for="password">{{ form.password.label.text }}</label>
+            {{ form.password(size=32, placeholder="Минимум 6 символов") }}
+            {% for error in form.password.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+            
+            <label for="role">{{ form.role.label.text }}</label>
+            {{ form.role() }}
+            {% for error in form.role.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
+            
+            <button type="submit">{{ form.submit() }}</button>
+        </form>
+        
+        <div class="links">
+            <p>Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+            <p><a href="{{ url_for('index') }}">← На главную</a></p>
+        </div>
+    </div>
 </body>
 </html>

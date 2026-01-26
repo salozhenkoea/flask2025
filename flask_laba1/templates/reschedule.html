@@ -4,48 +4,60 @@
     <meta charset="UTF-8">
     <title>Перенос записи</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        form { max-width: 400px; }
-        label { display: block; margin-top: 15px; }
-        select, input { width: 100%; padding: 8px; margin-top: 5px; }
-        button { margin-top: 20px; padding: 10px 20px; background: #ffc107; color: black; border: none; cursor: pointer; }
-        a { display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none; }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .current-info { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #f39c12; }
+        .current-info p { margin: 5px 0; color: #34495e; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #34495e; }
+        select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        select:focus { outline: none; border-color: #f39c12; }
+        .error { color: #e74c3c; font-size: 14px; margin-top: 5px; }
+        button { width: 100%; margin-top: 25px; padding: 12px; background: #f39c12; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #e67e22; }
+        .links { text-align: center; margin-top: 20px; }
+        .links a { color: #95a5a6; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h2>Перенос записи</h2>
-    <p>Текущая запись: <strong>{{ appt.appointment_date }} {{ appt.time_slot }}</strong> к врачу <strong>{{ appt.doctor_username }}</strong></p>
-
-    <form method="POST">
-        <label>Новый врач:</label>
-        <select name="doctor" required>
-            {% for doc in doctors %}
-                <option value="{{ doc.username }}" {% if doc.username == appt.doctor_username %}selected{% endif %}>
-                    {{ doc.username }}
-                </option>
+    <div class="container">
+        <h2>🔄 Перенос записи</h2>
+        
+        <div class="current-info">
+            <p><strong>Текущая запись:</strong></p>
+            <p>📅 Дата: <strong>{{ appt.appointment_date }}</strong></p>
+            <p>🕐 Время: <strong>{{ appt.time_slot }}</strong></p>
+            <p>👨‍⚕️ Врач: <strong>{{ appt.doctor_username }}</strong></p>
+        </div>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <label for="doctor">{{ form.doctor.label.text }}</label>
+            {{ form.doctor() }}
+            {% for error in form.doctor.errors %}
+                <span class="error">{{ error }}</span>
             {% endfor %}
-        </select>
-
-        <label>Новая дата:</label>
-        <select name="date" required>
-            {% for date in dates %}
-                <option value="{{ date }}" {% if date == appt.appointment_date %}selected{% endif %}>
-                    {{ date }}
-                </option>
+            
+            <label for="date">{{ form.date.label.text }}</label>
+            {{ form.date() }}
+            {% for error in form.date.errors %}
+                <span class="error">{{ error }}</span>
             {% endfor %}
-        </select>
-
-        <label>Новое время:</label>
-        <select name="time_slot" required>
-            {% for slot in time_slots %}
-                <option value="{{ slot }}" {% if slot == appt.time_slot %}selected{% endif %}>
-                    {{ slot }}
-                </option>
+            
+            <label for="time_slot">{{ form.time_slot.label.text }}</label>
+            {{ form.time_slot() }}
+            {% for error in form.time_slot.errors %}
+                <span class="error">{{ error }}</span>
             {% endfor %}
-        </select>
-
-        <button type="submit">Перенести запись</button>
-    </form>
-    <a href="{{ url_for('dashboard') }}">← Отмена</a>
+            
+            <button type="submit">{{ form.submit(label='Перенести запись') }}</button>
+        </form>
+        
+        <div class="links">
+            <p><a href="{{ url_for('dashboard') }}">← Отмена</a></p>
+        </div>
+    </div>
 </body>
 </html>
