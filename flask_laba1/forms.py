@@ -6,13 +6,17 @@ from models import User
 class LoginForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=20)])
     password = PasswordField('Пароль', validators=[DataRequired()])
-    role = SelectField('Роль', choices=[('doctor', 'Врач'), ('patient', 'Пациент')], validators=[DataRequired()])
+    role = SelectField('Роль', choices=[
+        ('doctor', 'Врач'), 
+        ('patient', 'Пациент'), 
+        ('admin', 'Администратор')
+    ], validators=[DataRequired()])
     submit = SubmitField('Войти')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=20)])
     password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)])
-    role = SelectField('Роль', choices=[('doctor', 'Врач'), ('patient', 'Пациент')], validators=[DataRequired()])
+    # Поле роли убрано - всегда "Пациент"
     submit = SubmitField('Зарегистрироваться')
 
     def validate_username(self, username):
@@ -28,3 +32,13 @@ class AppointmentForm(FlaskForm):
 class UploadFileForm(FlaskForm):
     file = FileField('Файл', validators=[DataRequired()])
     submit = SubmitField('Загрузить')
+
+class CreateUserForm(FlaskForm):
+    username = StringField('Логин', validators=[DataRequired(), Length(min=3, max=20)])
+    password = PasswordField('Пароль', validators=[DataRequired(), Length(min=6)])
+    # Поле роли убрано - всегда "Врач"
+    submit = SubmitField('Создать врача')
+
+    def validate_username(self, username):
+        if User.query.filter_by(username=username.data).first():
+            raise ValidationError('Пользователь с таким логином уже существует.')

@@ -9,6 +9,7 @@
         h2 { color: #2c3e50; margin-bottom: 10px; }
         .role-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: bold; color: white; background: #3498db; }
         .role-badge.patient { background: #2ecc71; }
+        .role-badge.admin { background: #9b59b6; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background: #f8f9fa; font-weight: bold; }
@@ -48,13 +49,21 @@
         {% endwith %}
 
         <h2>Привет, {{ username }}!</h2>
-        <p>Роль: <span class="role-badge {% if role == 'patient' %}patient{% endif %}">{{ 'Врач' if role == 'doctor' else 'Пациент' }}</span></p>
+        <p>Роль: <span class="role-badge {% if role == 'patient' %}patient{% elif role == 'admin' %}admin{% endif %}">{{ 'Врач' if role == 'doctor' else 'Пациент' if role == 'patient' else 'Администратор' }}</span></p>
 
         {% if role == 'doctor' %}
             <h3>Ваше расписание</h3>
             <p>Выберите дату, чтобы посмотреть расписание:</p>
             <div class="actions">
                 <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Выбрать дату</a>
+            </div>
+
+        {% elif role == 'admin' %}
+            <h3>Админ-панель</h3>
+            <p>Управление пользователями и системой.</p>
+            <div class="actions">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-files">👥 Управление пользователями</a>
+                <a href="{{ url_for('create_user') }}" class="btn btn-success">➕ Создать пользователя</a>
             </div>
 
         {% elif role == 'patient' %}

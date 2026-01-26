@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_from_directory
 from config import Config
 from models import db, User, Appointment, File
-from forms import LoginForm, RegistrationForm, AppointmentForm, UploadFileForm
+from forms import LoginForm, RegistrationForm, AppointmentForm, UploadFileForm, CreateUserForm
 from sqlalchemy.exc import IntegrityError
 import os
 from datetime import datetime, timedelta
@@ -16,6 +16,15 @@ def create_app():
     
     with app.app_context():
         db.create_all()
+        
+        # Создаем фиксированного администратора при первой инициализации
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            admin = User(username='admin', role='admin')
+            admin.set_password('admin')  # Пароль: admin
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Администратор создан: логин='admin', пароль='admin'")
     
     return app
 
@@ -36,7 +45,8 @@ def index():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, role=form.role.data)
+        # Роль автоматически устанавливается в "Пациент"
+        user = User(username=form.username.data, role='patient')
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -52,6 +62,11 @@ def login():
         if user and user.check_password(form.password.data) and user.role == form.role.data:
             session['user'] = user.username
             session['role'] = user.role
+            
+            # Обновляем дату последнего входа
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
             flash('Вход выполнен!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -66,9 +81,44 @@ def dashboard():
     role = session['role']
     if role == 'doctor':
         return render_template('doctor_dates.html', dates=get_available_dates(), username=username)
+    elif role == 'admin':
+        # Загружаем пользователей для админа
+        users = User.query.order_by(User.registration_date.desc()).all()
+        return render_template('admin_dashboard.html', users=users, username=username)
     else:
         appointments = Appointment.query.filter_by(patient_username=username).order_by(Appointment.appointment_date, Appointment.time_slot).all()
         return render_template('dashboard.html', username=username, role=role, appointments=appointments)
+
+# Админ-маршруты
+@app.route('/admin/create_user', methods=['GET', 'POST'])
+def create_user():
+    if 'user' not in session or session['role'] != 'admin':
+        flash('Доступ запрещён.', 'error')
+        return redirect(url_for('login'))
+    
+    form = CreateUserForm()
+    if form.validate_on_submit():
+        # Роль автоматически устанавливается в "Врач"
+        user = User(
+            username=form.username.data,
+            role='doctor'
+        )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Врач успешно создан!', 'success')
+        return redirect(url_for('admin_dashboard'))
+    
+    return render_template('create_user.html', form=form)
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if 'user' not in session or session['role'] != 'admin':
+        flash('Доступ запрещён.', 'error')
+        return redirect(url_for('login'))
+    
+    users = User.query.order_by(User.registration_date.desc()).all()
+    return render_template('admin_dashboard.html', users=users, username=session['user'])
 
 @app.route('/doctor_schedule/<date>')
 def doctor_schedule(date):

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f7fa; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; margin-bottom: 20px; text-align: center; }
+        .admin-info { background: #fef9e7; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #f39c12; }
+        .admin-info p { margin: 5px 0; color: #7f8c8d; }
+        .btn { display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; margin-bottom: 20px; }
+        .btn:hover { background: #2980b9; }
+        .btn-create { background: #2ecc71; }
+        .btn-create:hover { background: #27ae60; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; font-weight: bold; }
+        .role-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: bold; color: white; }
+        .role-badge.admin { background: #9b59b6; }
+        .role-badge.doctor { background: #3498db; }
+        .role-badge.patient { background: #2ecc71; }
+        .logout { display: block; margin-top: 30px; text-align: center; }
+        .logout a { color: #95a5a6; text-decoration: none; }
+        .logout a:hover { color: #7f8c8d; text-decoration: underline; }
+        .user-actions { display: flex; gap: 10px; }
+        .action-btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; text-align: center; }
+        .action-btn-edit { background: #f39c12; color: white; }
+        .action-btn-delete { background: #e74c3c; color: white; }
+        .action-btn-edit:hover { background: #e67e22; }
+        .action-btn-delete:hover { background: #c0392b; }
+        .no-users { color: #7f8c8d; font-style: italic; text-align: center; margin-top: 30px; padding: 20px; }
+        .user-info { color: #7f8c8d; font-size: 14px; }
+        .user-date { color: #34495e; }
+        .current-admin { background: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>👨‍💼 Админ-панель</h2>
+        <p>Привет, <strong>{{ username }}</strong>!</p>
+        
+        <div class="admin-info">
+            <p><strong>ℹ️ Информация:</strong></p>
+            <p>• Пациенты могут регистрироваться самостоятельно</p>
+            <p>• Врачей может создавать только администратор</p>
+        </div>
+        
+        <a href="{{ url_for('create_user') }}" class="btn btn-create">➕ Создать врача</a>
+        
+        {% if users %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Имя пользователя</th>
+                        <th>Роль</th>
+                        <th>Дата регистрации</th>
+                        <th>Последний вход</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            <span class="role-badge {% if user.role == 'admin' %}admin{% elif user.role == 'doctor' %}doctor{% else %}patient{% endif %}">
+                                {{ user.role|capitalize }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="user-date">{{ user.registration_date.strftime('%d.%m.%Y') }}</div>
+                            <div class="user-info">{{ user.registration_date.strftime('%H:%M') }}</div>
+                        </td>
+                        <td>
+                            {% if user.last_login %}
+                                <div class="user-date">{{ user.last_login.strftime('%d.%m.%Y') }}</div>
+                                <div class="user-info">{{ user.last_login.strftime('%H:%M') }}</div>
+                            {% else %}
+                                <div class="user-info">Нет данных</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-users">
+                <p>Пользователи отсутствуют.</p>
+                <p style="margin-top: 10px;">Нажмите кнопку выше, чтобы создать первого врача.</p>
+            </div>
+        {% endif %}
+        
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">🚪 Выйти</a>
+        </div>
+    </div>
+</body>
+</html>
