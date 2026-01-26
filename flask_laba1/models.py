@@ -25,3 +25,29 @@ class Appointment(db.Model):
     __table_args__ = (
         db.UniqueConstraint('doctor_username', 'appointment_date', 'time_slot', name='uq_appointment'),
     )
+
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    original_filename = db.Column(db.String(255), nullable=False)
+    patient_username = db.Column(db.String(80), nullable=False)
+    upload_date = db.Column(db.DateTime, default=db.func.current_timestamp())
+    file_type = db.Column(db.String(50))
+    file_size = db.Column(db.Integer)  # размер в байтах
+    
+    def get_file_size_mb(self):
+        """Возвращает размер файла в МБ"""
+        return round(self.file_size / (1024 * 1024), 2) if self.file_size else 0
+    
+    def get_file_type_icon(self):
+        """Возвращает иконку в зависимости от типа файла"""
+        if self.file_type in ['pdf']:
+            return '📄'
+        elif self.file_type in ['jpg', 'jpeg', 'png', 'gif']:
+            return '🖼️'
+        elif self.file_type in ['doc', 'docx']:
+            return '📝'
+        elif self.file_type in ['xls', 'xlsx']:
+            return '📊'
+        else:
+            return '📁'
